@@ -1,0 +1,74 @@
+{% extends "genetic_algorithms/base.html" %}
+
+{% block title %}Inicio | Algoritmos Genéticos{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h2>Algoritmo Genético - Encontrar Máximos de Funciones</h2>
+    
+    <div class="algorithm-description">
+        <p>Esta aplicación utiliza algoritmos genéticos para encontrar el máximo de una función matemática.</p>
+        <p>Ingresa los parámetros del algoritmo y observa cómo evoluciona la población hasta encontrar la solución óptima.</p>
+    </div>
+    
+    <div class="form-container">
+        <h3>Configurar Algoritmo Genético</h3>
+        <form method="post" action="{% url 'ejecutar_algoritmo' %}" class="ga-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="function_type">Función a optimizar:</label>
+                <select id="function_type" name="function_type" required>
+                    <option value="simple_quadratic">f(x) = -(x-5)² + 10 (Función cuadrática simple)</option>
+                    <option value="complex">f(x,y) = sin(x) + cos(y) (Función trigonométrica 2D)</option>
+                    <option value="rastrigin">Función de Rastrigin (Múltiples máximos locales)</option>
+                </select>
+            </div>
+            
+            <div class="form-section">
+                <h4>Parámetros del Algoritmo</h4>
+                
+                <div class="form-group">
+                    <label for="population_size">Tamaño de población:</label>
+                    <input type="number" id="population_size" name="population_size" min="10" max="200" value="50" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="num_generations">Número de generaciones:</label>
+                    <input type="number" id="num_generations" name="num_generations" min="5" max="500" value="50" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mutation_rate">Tasa de mutación (%):</label>
+                    <input type="number" id="mutation_rate" name="mutation_rate" min="0" max="100" value="10" required>
+                    <span class="input-description">Porcentaje de genes que mutan en cada generación</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="crossover_rate">Tasa de cruce (%):</label>
+                    <input type="number" id="crossover_rate" name="crossover_rate" min="0" max="100" value="70" required>
+                    <span class="input-description">Probabilidad de que dos individuos se crucen</span>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h4>Límites de Búsqueda</h4>
+                
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="min_value">Valor mínimo:</label>
+                        <input type="number" id="min_value" name="min_value" value="-10" step="0.1" required>
+                    </div>
+                    
+                    <div class="form-group half">
+                        <label for="max_value">Valor máximo:</label>
+                        <input type="number" id="max_value" name="max_value" value="10" step="0.1" required>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Ejecutar Algoritmo</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

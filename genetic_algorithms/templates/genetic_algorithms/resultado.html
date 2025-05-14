@@ -1,0 +1,220 @@
+{% extends "genetic_algorithms/base.html" %}
+
+{% block title %}Resultados | Algoritmos Genéticos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-container {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .generation-graph {
+        width: 100%;
+        height: 400px;
+        margin: 30px 0;
+        border: 1px solid #ddd;
+        background: #fff;
+    }
+    
+    .result-highlight {
+        background: #e9f7ef;
+        padding: 15px;
+        border-left: 4px solid #2ecc71;
+        margin: 20px 0;
+    }
+    
+    .result-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .result-card {
+        background: white;
+        padding: 15px;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .param-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    
+    .param-table th, .param-table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .param-table th {
+        background-color: #f2f2f2;
+    }
+    
+    .generations-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.9rem;
+    }
+    
+    .generations-table th, .generations-table td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+    
+    .generations-table th {
+        background-color: #f2f2f2;
+    }
+    
+    .btn-back {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 15px;
+        background: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    
+    .btn-back:hover {
+        background: #2980b9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <h2>Resultados del Algoritmo Genético</h2>
+    
+    <div class="result-container">
+        <h3>Función optimizada: {{ function_name }}</h3>
+        
+        <div class="result-highlight">
+            <h4>Mejor solución encontrada:</h4>
+            <p><strong>Valores:</strong> {% for value in best_solution %}{{ value|floatformat:4 }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            <p><strong>Aptitud:</strong> {{ best_fitness|floatformat:4 }}</p>
+            <p><strong>Generación:</strong> {{ best_generation }}</p>
+        </div>
+        
+        <h4>Gráfico de evolución</h4>
+        <div id="evolutionChart" class="generation-graph"></div>
+        
+        <div class="result-details">
+            <div class="result-card">
+                <h4>Parámetros utilizados</h4>
+                <table class="param-table">
+                    <tr><th>Parámetro</th><th>Valor</th></tr>
+                    <tr><td>Tamaño de población</td><td>{{ population_size }}</td></tr>
+                    <tr><td>Número de generaciones</td><td>{{ num_generations }}</td></tr>
+                    <tr><td>Tasa de mutación</td><td>{{ mutation_rate }}%</td></tr>
+                    <tr><td>Tasa de cruce</td><td>{{ crossover_rate }}%</td></tr>
+                    <tr><td>Rango de búsqueda</td><td>{{ min_value }} a {{ max_value }}</td></tr>
+                </table>
+            </div>
+            
+            <div class="result-card">
+                <h4>Progreso por generaciones</h4>
+                <table class="generations-table">
+                    <thead>
+                        <tr>
+                            <th>Generación</th>
+                            <th>Mejor aptitud</th>
+                            <th>Aptitud promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gen in generation_stats %}
+                        <tr>
+                            <td>{{ gen.generation }}</td>
+                            <td>{{ gen.best_fitness|floatformat:4 }}</td>
+                            <td>{{ gen.avg_fitness|floatformat:4 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <a href="{% url 'inicio' %}" class="btn-back">← Volver al inicio</a>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Datos para el gráfico
+        const generationLabels = [{% for gen in generation_stats %}'{{ gen.generation }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+        const bestFitness = [{% for gen in generation_stats %}{{ gen.best_fitness }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+        const avgFitness = [{% for gen in generation_stats %}{{ gen.avg_fitness }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+        
+        // Crear gráfico de evolución
+        const ctx = document.getElementById('evolutionChart').getContext('2d');
+        const evolutionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: generationLabels,
+                datasets: [
+                    {
+                        label: 'Mejor aptitud',
+                        data: bestFitness,
+                        borderColor: '#2ecc71',
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Aptitud promedio',
+                        data: avgFitness,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolución de la aptitud a través de las generaciones'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Generación'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Aptitud'
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
