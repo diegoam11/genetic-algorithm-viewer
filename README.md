@@ -10,16 +10,8 @@ Esta guía te ayudará a configurar y ejecutar un proyecto Django en tu entorno 
 
 ---
 
-## 🚀 **1. Clonar el Repositorio**
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd <NOMBRE_DEL_PROYECTO>
-```
-
----
-
-## 🌐 **2. Crear un Entorno Virtual**
-Para aislar las dependencias del proyecto, es recomendable crear un entorno virtual.
+## 🌐 **1. Crear un Entorno Virtual**
+En la raíz del proyecto crear el entorno virtual y activarlo:
 
 ### Windows:
 ```cmd
@@ -40,7 +32,7 @@ deactivate
 
 ---
 
-## 📦 **3. Instalar Dependencias**
+## 📦 **2. Instalar Dependencias**
 Una vez dentro del entorno virtual, instala las dependencias:
 ```bash
 pip install -r requirements.txt
@@ -49,7 +41,7 @@ pip install -r requirements.txt
 ---
 
 
-## ▶️ **6. Ejecutar el Servidor**
+## ▶️ **3. Ejecutar el Servidor**
 Inicia el servidor local:
 ```bash
 python manage.py runserver
