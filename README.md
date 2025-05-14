@@ -1,4 +1,4 @@
-## Proyecto Django - Guía de Inicio Rápido
+## ¿Cómo ejecutar el proyecto localmente?
 
 Esta guía te ayudará a configurar y ejecutar un proyecto Django en tu entorno local, incluyendo entornos virtuales y los comandos necesarios para Windows, macOS y Linux.
 
